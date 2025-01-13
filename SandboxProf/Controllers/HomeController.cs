@@ -11,6 +11,7 @@ namespace SandboxProf.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _configuration;
         StudentDAO studentDAO;
+        NationalityDAO nationalityDAO;
 
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
@@ -25,7 +26,24 @@ namespace SandboxProf.Controllers
 
         public IActionResult Insert([FromBody] Student student)
         {
-            return View();
+            studentDAO = new StudentDAO(_configuration);
+            if (studentDAO.Get(student.Email).Email == null) //the student doesn't exist
+            {
+                int result = studentDAO.Insert(student);
+                return Ok(result);
+            }
+            else
+            {
+                return Error();
+            }
+            
+        }
+
+        public IActionResult GetNationalities()
+        {
+            nationalityDAO = new NationalityDAO(_configuration);
+
+            return Json(nationalityDAO.Get());
         }
 
         public IActionResult Privacy()

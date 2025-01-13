@@ -196,7 +196,6 @@
 
                 <div class="col-md-offset-1 col-md-4 col-sm-12">
                     <div class="entry-form">
-                        <form action="#" method="post">
                             <h2>Signup today</h2>
                             <input type="text" name="full name" id="name" class="form-control" placeholder="Full name" required="">
 
@@ -204,8 +203,15 @@
 
                             <input type="password" name="password" id="password" class="form-control" placeholder="Your password" required="">
 
+                            <select name="nationalities" id="nationality" class="form-control without-margin">
+                                <option value="0" selected>Select your nationality</option>
+                            </select>
+
+                            
+                            
                             <button class="submit-btn form-control" onclick="return Add()" id="form-submit">Get started</button>
-                        </form>
+
+                            <label id="validation"></label>
                     </div>
                 </div>
 

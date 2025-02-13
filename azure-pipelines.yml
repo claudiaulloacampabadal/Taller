@@ -1,0 +1,31 @@
+
+
+trigger:
+- master
+
+pool:
+ name: my_agent
+
+
+steps:
+
+- task: DotNetCoreCLI@2
+  inputs:
+    azureSubscription: 'Azure subscription 1(59ef84d4-f523-4cee-9ef6-cce202b4bb53)'
+    command: 'build'
+    projects: '**/*.csproj'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/SandboxProf'
+- task: DotNetCoreCLI@2
+  inputs:
+    azureSubscription: 'Azure subscription 1(2)(59ef84d4-f523-4cee-9ef6-cce202b4bb53)'
+    command: 'publish'
+    publishWebProjects: true
+    workingDirectory: '$(System.DefaultWorkingDirectory)/SandboxProf'
+- task: AzureRmWebAppDeployment@5
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Azure subscription 1(3)(59ef84d4-f523-4cee-9ef6-cce202b4bb53)'
+    appType: 'webAppLinux'
+    WebAppName: 'TallerAzireAsc2Dev'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    DeploymentTypeLinux: 'oneDeploy'

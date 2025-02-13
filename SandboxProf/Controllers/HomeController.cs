@@ -1,8 +1,11 @@
+using System.Data.SqlClient;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using SandboxProf.Models;
 using SandboxProf.Models.DAO;
 using SandboxProf.Models.Domain;
+using SqlException = Microsoft.Data.SqlClient.SqlException;
 
 namespace SandboxProf.Controllers
 {
@@ -17,6 +20,7 @@ namespace SandboxProf.Controllers
         {
             _logger = logger;
             _configuration = configuration;
+            //TO DO: instance studentDAO HERE
         }
 
         public IActionResult Index()
@@ -24,17 +28,63 @@ namespace SandboxProf.Controllers
             return View();
         }
 
-        public IActionResult Insert([FromBody] Student student)
+        public IActionResult GetAllStudents()
         {
             studentDAO = new StudentDAO(_configuration);
-            if (studentDAO.Get(student.Email).Email == null) //the student doesn't exist
+
+            return Ok(studentDAO.Get());
+        }
+
+        public IActionResult GetStudentByEmail(string email)
+        {
+            studentDAO = new StudentDAO(_configuration);
+
+            return Ok(studentDAO.Get(email));
+        }
+
+        public IActionResult DeleteStudent(string email)
+        {
+            try
             {
-                int result = studentDAO.Insert(student);
-                return Ok(result);
-            }
-            else
+                studentDAO = new StudentDAO(_configuration);
+
+                return Ok(studentDAO.Delete(email));
+            }catch (Exception ex)
             {
+                //TO DO
                 return Error();
+            }
+            
+        }
+
+        public IActionResult UpdateStudent([FromBody] Student student)
+        {
+            //TODO: handle exception appropriately and send meaningful message to the view
+            studentDAO = new StudentDAO(_configuration);
+            return Ok(studentDAO.Update(student));
+
+        }
+
+        public IActionResult Insert([FromBody] Student student)
+        {
+            try
+            {
+                studentDAO = new StudentDAO(_configuration);
+                if (studentDAO.Get(student.Email).Email == null) //the student doesn't exist
+                {
+                    int result = studentDAO.Insert(student);
+                    return Ok(result);
+                }
+                else
+                {
+                    return Error();
+                }
+            }
+            catch (SqlException e)
+            {
+                //TO DO: send the most meaningful message to the front-end for the user to see
+                ViewBag.Message = e.Message;
+                return View(e.ToString());
             }
             
         }
